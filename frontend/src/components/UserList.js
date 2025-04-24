@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { Link } from "react-router-dom";
+import Swal from "sweetalert2"; // Import SweetAlert2
 
 const UserList = () => {
     const [users, setUser] = useState([]);
@@ -21,13 +22,28 @@ const UserList = () => {
     };
 
     const deleteUser = async (id) => {
-        try {
-            await axios.delete(`http://localhost:5000/users/${id}`);
-            getUsers(); // Refresh the user list after deletion
-        } catch (error) {
-            setErrorMessage("Failed to delete user. Please try again.");
-            console.error("Error deleting user:", error);
-        }
+        // Tampilkan pop-up konfirmasi menggunakan SweetAlert2
+        Swal.fire({
+            title: "Are you sure?",
+            text: "You won't be able to revert this!",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#3085d6",
+            cancelButtonColor: "#d33",
+            confirmButtonText: "Yes, delete it!",
+        }).then(async (result) => {
+            if (result.isConfirmed) {
+                try {
+                    await axios.delete(`http://localhost:5000/users/${id}`);
+                    getUsers(); // Refresh daftar pengguna setelah penghapusan
+                    Swal.fire("Deleted!", "The user has been deleted.", "success");
+                } catch (error) {
+                    setErrorMessage("Failed to delete user. Please try again.");
+                    console.error("Error deleting user:", error);
+                    Swal.fire("Error!", "Failed to delete user.", "error");
+                }
+            }
+        });
     };
 
     return (

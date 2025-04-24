@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import Swal from "sweetalert2"; // Import SweetAlert2
 
 const AddUser = () => {
     const [name, setName] = useState("");
@@ -12,13 +13,30 @@ const AddUser = () => {
         e.preventDefault();
         try {
             await axios.post("http://localhost:5000/users", {
-            name,
-            email,
-            gender,
+                name,
+                email,
+                gender,
             });
-            navigate("/"); // Redirect to the user list page after saving
-        }catch (error){
-            console.log(error);
+
+            // Tampilkan pesan sukses menggunakan SweetAlert2
+            Swal.fire({
+                title: "Success!",
+                text: "User has been added successfully.",
+                icon: "success",
+                confirmButtonText: "OK",
+            }).then(() => {
+                navigate("/"); // Redirect ke halaman daftar pengguna setelah berhasil
+            });
+        } catch (error) {
+            console.error("Error adding user:", error);
+
+            // Tampilkan pesan error menggunakan SweetAlert2
+            Swal.fire({
+                title: "Error!",
+                text: "Failed to add user. Please try again.",
+                icon: "error",
+                confirmButtonText: "OK",
+            });
         }
     };
 

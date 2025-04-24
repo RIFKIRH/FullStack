@@ -1,7 +1,7 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useNavigate, useParams } from "react-router-dom";
+import Swal from "sweetalert2"; // Import SweetAlert2
 
 const EditUser = () => {
     const [name, setName] = useState("");
@@ -27,15 +27,24 @@ const EditUser = () => {
         }
     };
 
-    const handleUpdateUser = async (e) => {
+    const updateUser = async (e) => {
         e.preventDefault();
         try {
-            await axios.put(`http://localhost:5000/users/${id}`, {
+            await axios.patch(`http://localhost:5000/users/${id}`, {
                 name,
                 email,
                 gender,
             });
-            navigate("/"); // Redirect ke halaman daftar pengguna setelah berhasil
+
+            // Tampilkan pesan sukses menggunakan SweetAlert2
+            Swal.fire({
+                title: "Success!",
+                text: "User data has been updated successfully.",
+                icon: "success",
+                confirmButtonText: "OK",
+            }).then(() => {
+                navigate("/"); // Redirect ke halaman daftar pengguna setelah berhasil
+            });
         } catch (error) {
             setErrorMessage("Failed to update user. Please try again.");
             console.log(error);
@@ -46,7 +55,7 @@ const EditUser = () => {
         <div className="columns mt-5 is-centered">
             <div className="column is-half">
                 {errorMessage && <p className="has-text-danger">{errorMessage}</p>}
-                <form onSubmit={handleUpdateUser}>
+                <form onSubmit={updateUser}>
                     <div className="field">
                         <label className="label">Name</label>
                         <div className="control">
